@@ -3,7 +3,9 @@ import { DocumentManager } from "./DocumentManager";
 import { WebSocketServer } from "./WebSocketServer";
 import { log } from "./utils";
 
-const PORT = Number(process.env.PORT) || 8080;
+// Use WS_PORT (not the generic PORT) so a stray PORT in the environment
+// (e.g. a host app's own port) can't hijack the WebSocket server's port.
+const PORT = Number(process.env.WS_PORT) || 8080;
 const PERSISTENCE_PATH = process.env.PERSISTENCE_PATH || "./data";
 
 async function main(): Promise<void> {
