@@ -24,3 +24,83 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.ProseMirror {
+  min-height: calc(100vh - 230px);
+  outline: none;
+  padding: 1.5rem 2rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #0a0a0a;
+}
+
+.ProseMirror p {
+  margin: 0.6em 0;
+}
+
+.ProseMirror h1 {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 1.2em 0 0.5em;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 1.2em 0 0.5em;
+}
+
+.ProseMirror ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.ProseMirror ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 1rem;
+  color: #6b7280;
+}
+
+.ProseMirror code {
+  background: #f3f4f6;
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+  font-size: 0.9em;
+}
+
+.ProseMirror pre {
+  background: #1f2937;
+  color: #f9fafb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.collaboration-cursor__caret {
+  border-left: 1px solid #0d0d0d;
+  border-right: 1px solid #0d0d0d;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+.collaboration-cursor__label {
+  border-radius: 3px 3px 3px 0;
+  color: #ffffff;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  left: -1px;
+  line-height: normal;
+  padding: 0.1rem 0.3rem;
+  position: absolute;
+  top: -1.4em;
+  user-select: none;
+  white-space: nowrap;
+}

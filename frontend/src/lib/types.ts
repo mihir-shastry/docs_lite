@@ -12,3 +12,9 @@ export interface UserInfo{
 }
 //Status about a user's connection.
 export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error'
+
+//An online user's presence, derived from Yjs awareness.
+export interface OnlineUser {
+    clientId: number;
+    userInfo: UserInfo;
+}

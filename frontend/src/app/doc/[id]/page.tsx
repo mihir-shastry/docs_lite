@@ -1,52 +1,50 @@
 'use client'
-import { useEffect, useState, use } from "react"
-import { UserInfo } from "@/lib/types"
-import UserNameModal from "@/components/UserNameModal"
-import { WS_URL } from "@/lib/constants"
-import { CollaborationStatus } from "@/components/CollaborationStatus"
-import { ConnectionStatus } from "@/lib/types"
+import { use, useEffect, useState } from 'react'
+import type { UserInfo } from '@/lib/types'
+import UserNameModal from '@/components/UserNameModal'
+import { Editor } from '@/components/Editor'
+import { useYjsDocument } from '@/hooks/useYjsDocument'
 
+export default function DocumentEditor({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  useEffect(() => {
+    try{
+        const stored = localStorage.getItem('docs-lite-user');
+        if(stored){
+            setUserInfo(JSON.parse(stored) as UserInfo);
+        }
+    } catch {
 
-
-export default function docEditor({params}: {params: Promise<{id: string}>}){
-    const { id } = use(params)
-    const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
-    const [status, setStatus] = useState<ConnectionStatus>('connecting');
-
-    useEffect(() => {
-        const ws = new WebSocket(WS_URL)
-        ws.onopen = () => {
-            setStatus('connected');
-            ws.send('joined');
-        }
-        ws.onclose = () => {
-            setStatus('disconnected');
-        }
-        ws.onerror = () => {
-            setStatus('error');
-        }
-        ws.onmessage = (e) => {
-            console.log('Received:', e.data);
-        }
-        return () => {
-            ws.close();
-        }
-    }, [])
-
-    function handleSave(info: UserInfo) {
-        setUserInfo(info)
-        localStorage.setItem('docs-lite-user', JSON.stringify(info))
     }
+  }, [])
 
+  const { doc, provider, status } = useYjsDocument(id)
 
-    return(
-        <div className="flex min-h-screen flex-col p-8">
-            <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold">Editing document: {id}</h1><CollaborationStatus status={status}/>
-            </div>
-            <textarea className="flex-1 w-full rounded-lg border border-gray-300 p-4 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Start typing...">
-            </textarea>
-            {!userInfo && <UserNameModal onSave={handleSave} />}
-        </div>
+  function handleSave(info: UserInfo) {
+    setUserInfo(info)
+    localStorage.setItem('docs-lite-user', JSON.stringify(info))
+  }
+
+  if (!userInfo) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <UserNameModal onSave={handleSave} />
+      </div>
     )
+  }
+
+  if (!doc || !provider) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-gray-500">
+        Connecting…
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex h-screen flex-col p-4">
+      <Editor documentId={id} doc={doc} provider={provider} status={status} userInfo={userInfo} onUserInfoChange={handleSave} />
+    </div>
+  )
 }
