@@ -44,7 +44,6 @@ export class DocumentManager {
       doc,
       awareness: new awarenessProtocol.Awareness(doc),
       connections: new Set(),
-      lastPersisted: Date.now(),
     };
     this.documents.set(documentId, entry);
     this.loading.delete(documentId);
@@ -96,7 +95,11 @@ export class DocumentManager {
     const entry = this.documents.get(documentId);
     if (!entry) return;
     entry.connections.add(ws);
-    this.connClientIds.set(ws, new Set());
+    // Awareness may have arrived before registration (load still in flight) —
+    // don't clobber already-tracked client IDs or their cleanup is lost.
+    if (!this.connClientIds.has(ws)) {
+      this.connClientIds.set(ws, new Set());
+    }
   }
 
   removeConnection(documentId: string, ws: WebSocket): void {
@@ -176,7 +179,6 @@ export class DocumentManager {
 
     const state = Y.encodeStateAsUpdate(entry.doc);
     await this.persistence.save(documentId, state);
-    entry.lastPersisted = Date.now();
     log(`Document ${documentId} persisted`);
   }
 }

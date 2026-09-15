@@ -11,18 +11,32 @@ interface usernameModalProp{
 export default function UserNameModal({onSave}: usernameModalProp){
     const [name, setName] = useState('')
     const [color, setColor] = useState(USER_COLORS[0])
+    const isValid = name.trim().length > 0
 
     return(
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
             <div className="rounded-lg bg-white p-8 shadow-xl">
                 <h2 className="text-xl font-bold mb-4">Enter your name.</h2>
-                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name" className="w-full rounded-lg border border-gray-300 p-2 mb-4"></input>
+                <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && isValid) onSave({ name: name.trim(), color }) }}
+                    maxLength={30}
+                    placeholder="Your Name"
+                    className="w-full rounded-lg border border-gray-300 p-2 mb-4"
+                ></input>
                 <div className="flex gap-2 mb-4">
                 {USER_COLORS.map((c) => (
                     <button key={c} onClick={() => setColor(c)} className={cn('h-8 w-8 rounded-full', color === c && 'ring-2 ring-offset-2 ring-blue-500')} style={{ backgroundColor: c }} />
                 ))}
                 </div>
-                <button onClick={() => onSave({name, color})} className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white">Join.</button>
+                <button
+                    onClick={() => isValid && onSave({ name: name.trim(), color })}
+                    disabled={!isValid}
+                    className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600"
+                >
+                    Join.
+                </button>
             </div>
         </div>
     )

@@ -26,11 +26,22 @@ export function useYjsDocument(documentId: string) {
     }
     yprovider.on('status', onStatus)
 
+    // y-websocket only reports connected/connecting/disconnected via 'status';
+    // surface transport errors so the UI's error state is reachable.
+    const onConnectionError = () => setStatus('error')
+    const onConnectionClose = () => {
+      setStatus((prev) => (prev === 'error' ? 'error' : 'disconnected'))
+    }
+    yprovider.on('connection-error', onConnectionError)
+    yprovider.on('connection-close', onConnectionClose)
+
     setDoc(ydoc)
     setProvider(yprovider)
 
     return () => {
       yprovider.off('status', onStatus)
+      yprovider.off('connection-error', onConnectionError)
+      yprovider.off('connection-close', onConnectionClose)
       yprovider.destroy()
       ydoc.destroy()
     }

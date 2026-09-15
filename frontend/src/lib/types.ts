@@ -1,14 +1,14 @@
-//Data about a document.
-export interface DocMeta{
-    id : string;
-    title : string;
-    createdAt : number;
-    updatedAt : number
-}
 //Data about an editor.
 export interface UserInfo{
     name: string;
     color: string
+}
+
+//A document recently opened in this browser.
+export interface RecentDocument {
+    id: string;
+    title: string;
+    updatedAt: number;
 }
 //Status about a user's connection.
 export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error'

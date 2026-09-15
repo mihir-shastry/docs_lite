@@ -18,7 +18,7 @@ export function CollaborationStatus ({status} : {status: ConnectionStatus}){
 
     return(<div className="flex items-center gap-2">
         <span className={cn('h-3 w-3 rounded-full', colorMap[status])} />
-        <span className="text-sm text-gray-600">{labelMap[status]}</span>
+        <span className={cn('text-sm', status === 'error' ? 'text-red-600' : 'text-gray-600')}>{labelMap[status]}</span>
     </div>)
 
 

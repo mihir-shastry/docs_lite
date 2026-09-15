@@ -4,6 +4,8 @@ import type { UserInfo } from '@/lib/types'
 import UserNameModal from '@/components/UserNameModal'
 import { Editor } from '@/components/Editor'
 import { useYjsDocument } from '@/hooks/useYjsDocument'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
+import { useRecentDocuments } from '@/hooks/useRecentDocuments'
 
 export default function DocumentEditor({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -20,6 +22,18 @@ export default function DocumentEditor({ params }: { params: Promise<{ id: strin
   }, [])
 
   const { doc, provider, status } = useYjsDocument(id)
+  const { displayTitle, setTitle } = useDocumentTitle(doc, provider)
+  const { rememberDocument } = useRecentDocuments()
+
+  // Keep the browser's recent list useful even when a title changes in another tab.
+  useEffect(() => {
+    if (doc && provider?.synced) rememberDocument(id, displayTitle)
+  }, [displayTitle, doc, id, provider, rememberDocument])
+
+  // Live tab title uses the shared title.
+  useEffect(() => {
+    document.title = `${displayTitle} — Docs Lite`
+  }, [displayTitle])
 
   function handleSave(info: UserInfo) {
     setUserInfo(info)
@@ -44,7 +58,7 @@ export default function DocumentEditor({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="flex h-screen flex-col p-4">
-      <Editor documentId={id} doc={doc} provider={provider} status={status} userInfo={userInfo} onUserInfoChange={handleSave} />
+      <Editor doc={doc} provider={provider} status={status} title={displayTitle} onTitleChange={setTitle} userInfo={userInfo} onUserInfoChange={handleSave} />
     </div>
   )
 }

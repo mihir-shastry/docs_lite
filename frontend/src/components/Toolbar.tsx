@@ -4,13 +4,14 @@ import { cn } from '@/lib/utils'
 
 interface ToolbarProps {
   editor: Editor | null
+  /** Live active/enabled state, subscribed via useEditorState in the parent. */
+  active: Record<string, boolean> | null
 }
 
 type ButtonDef = {
   key: string
   label: string
   title: string
-  isActive: (editor: Editor) => boolean
   run: (editor: Editor) => void
 }
 
@@ -19,69 +20,60 @@ const buttons: ButtonDef[] = [
     key: 'bold',
     label: 'B',
     title: 'Bold',
-    isActive: (e) => e.isActive('bold'),
     run: (e) => e.chain().focus().toggleBold().run(),
   },
   {
     key: 'italic',
     label: 'I',
     title: 'Italic',
-    isActive: (e) => e.isActive('italic'),
     run: (e) => e.chain().focus().toggleItalic().run(),
   },
   {
     key: 'strike',
     label: 'S',
     title: 'Strikethrough',
-    isActive: (e) => e.isActive('strike'),
     run: (e) => e.chain().focus().toggleStrike().run(),
   },
   {
     key: 'h1',
     label: 'H1',
     title: 'Heading 1',
-    isActive: (e) => e.isActive('heading', { level: 1 }),
     run: (e) => e.chain().focus().toggleHeading({ level: 1 }).run(),
   },
   {
     key: 'h2',
     label: 'H2',
     title: 'Heading 2',
-    isActive: (e) => e.isActive('heading', { level: 2 }),
     run: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(),
   },
   {
     key: 'bulletList',
     label: '• List',
     title: 'Bullet list',
-    isActive: (e) => e.isActive('bulletList'),
     run: (e) => e.chain().focus().toggleBulletList().run(),
   },
   {
     key: 'orderedList',
     label: '1. List',
     title: 'Ordered list',
-    isActive: (e) => e.isActive('orderedList'),
     run: (e) => e.chain().focus().toggleOrderedList().run(),
   },
   {
     key: 'undo',
     label: '↩',
     title: 'Undo',
-    isActive: () => false,
     run: (e) => e.chain().focus().undo().run(),
   },
   {
     key: 'redo',
     label: '↪',
     title: 'Redo',
-    isActive: () => false,
     run: (e) => e.chain().focus().redo().run(),
   },
 ]
 
-export function Toolbar({ editor }: ToolbarProps) {
-  if (!editor) return null
+export function Toolbar({ editor, active }: ToolbarProps) {
+  if (!editor || !active) return null
 
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 px-3 py-2">
@@ -95,7 +87,8 @@ export function Toolbar({ editor }: ToolbarProps) {
           onClick={() => b.run(editor)}
           className={cn(
             'min-w-8 rounded px-2 py-1 text-sm font-semibold text-gray-600 hover:bg-gray-100',
-            b.isActive(editor) && 'bg-blue-100 text-blue-700'
+            active[b.key] && 'bg-blue-100 text-blue-700',
+            (b.key === 'undo' || b.key === 'redo') && !active[b.key] && 'opacity-40'
           )}
         >
           {b.label}

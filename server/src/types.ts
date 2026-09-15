@@ -6,12 +6,6 @@ export interface DocEntry {
   doc: Y.Doc;
   awareness: Awareness; // presence + cursors, separate from the CRDT
   connections: Set<WebSocket>;
-  lastPersisted: number;
-}
-
-export interface ConnectionMeta {
-  docID: string;
-  clientID: number;
 }
 
 // First byte of every binary WebSocket message (Yjs protocol)
